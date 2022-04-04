@@ -1,9 +1,9 @@
-import {parser} from "lezer-python";
-import {TreeCursor} from "lezer-tree";
-import {Expr, Stmt} from "./ast";
+import { parser } from "lezer-python";
+import { TreeCursor } from "lezer-tree";
+import { Expr, Stmt } from "./ast";
 
-export function traverseExpr(c : TreeCursor, s : string) : Expr {
-  switch(c.type.name) {
+export function traverseExpr(c: TreeCursor, s: string): Expr {
+  switch (c.type.name) {
     case "Number":
       return {
         tag: "num",
@@ -34,8 +34,8 @@ export function traverseExpr(c : TreeCursor, s : string) : Expr {
   }
 }
 
-export function traverseStmt(c : TreeCursor, s : string) : Stmt {
-  switch(c.node.type.name) {
+export function traverseStmt(c: TreeCursor, s: string): Stmt {
+  switch (c.node.type.name) {
     case "AssignStatement":
       c.firstChild(); // go to name
       const name = s.substring(c.from, c.to);
@@ -58,21 +58,21 @@ export function traverseStmt(c : TreeCursor, s : string) : Stmt {
   }
 }
 
-export function traverse(c : TreeCursor, s : string) : Array<Stmt> {
-  switch(c.node.type.name) {
+export function traverse(c: TreeCursor, s: string): Array<Stmt> {
+  switch (c.node.type.name) {
     case "Script":
       const stmts = [];
       c.firstChild();
       do {
         stmts.push(traverseStmt(c, s));
-      } while(c.nextSibling())
-      console.log("traversed " + stmts.length + " statements ", stmts, "stopped at " , c.node);
+      } while (c.nextSibling())
+      console.log("traversed " + stmts.length + " statements ", stmts, "stopped at ", c.node);
       return stmts;
     default:
       throw new Error("Could not parse program at " + c.node.from + " " + c.node.to);
   }
 }
-export function parse(source : string) : Array<Stmt> {
+export function parse(source: string): Array<Stmt> {
   const t = parser.parse(source);
   return traverse(t.cursor(), source);
 }
