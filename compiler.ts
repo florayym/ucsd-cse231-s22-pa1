@@ -9,6 +9,8 @@ type CompileResult = {
   wasmSource: string,
 };
 
+const initializedVars = new Set();
+
 export function compile(source: string): CompileResult {
   const ast = parse(source);
   const definedVars = new Set();
@@ -37,6 +39,7 @@ function codeGen(stmt: Stmt): Array<string> {
   switch (stmt.tag) {
     case "define":
       var valStmts = codeGenExpr(stmt.value);
+      initializedVars.add(stmt.name);
       return valStmts.concat([`(local.set $${stmt.name})`]);
     case "expr":
       var exprStmts = codeGenExpr(stmt.expr);
@@ -56,6 +59,9 @@ function codeGenExpr(expr: Expr): Array<string> {
     case "num":
       return ["(i32.const " + expr.value + ")"];
     case "id":
+      if (!initializedVars.has(expr.name)) {
+        throw new Error(`ReferenceError: undefined variable ${expr.name}`);
+      }
       return [`(local.get $${expr.name})`];
     case "binexpr":
       return [
