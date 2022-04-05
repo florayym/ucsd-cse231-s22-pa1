@@ -24,6 +24,50 @@ describe('traverseExpr(c, s) function', () => {
   })
 
   // TODO: add additional tests here to ensure traverseExpr works as expected
+  it('parses a binary expression', () => {
+    const source = "4 * 6";
+    const cursor = parser.parse(source).cursor();
+
+    // go to statement
+    cursor.firstChild();
+    // go to expression
+    cursor.firstChild();
+
+    const parsedExpr = traverseExpr(cursor, source);
+
+    // Note: we have to use deep equality when comparing objects
+    expect(parsedExpr).to.deep.equal({ tag: "binexpr", opr1: { tag: "num", value: 4 }, op: "mul", opr2: { tag: "num", value: 6 } });
+  })
+
+  it('parses abs(expr)', () => {
+    const source = "abs(-2)";
+    const cursor = parser.parse(source).cursor();
+
+    // go to statement
+    cursor.firstChild();
+    // go to expression
+    cursor.firstChild();
+
+    const parsedExpr = traverseExpr(cursor, source);
+
+    // Note: we have to use deep equality when comparing objects
+    expect(parsedExpr).to.deep.equal({ tag: "builtin1", name: "abs", arg: { tag: "num", value: -2 } });
+  })
+
+  it('parses builtin2(expr, expr)', () => {
+    const source = "max(2, 6)";
+    const cursor = parser.parse(source).cursor();
+
+    // go to statement
+    cursor.firstChild();
+    // go to expression
+    cursor.firstChild();
+
+    const parsedExpr = traverseExpr(cursor, source);
+
+    // Note: we have to use deep equality when comparing objects
+    expect(parsedExpr).to.deep.equal({ tag: "builtin2", name: "max", arg1: { tag: "num", value: 2 }, arg2: { tag: "num", value: 6 } });
+  })
 });
 
 describe('traverseStmt(c, s) function', () => {

@@ -64,4 +64,8 @@ describe('run(source, config) function', () => {
   });
 
   // TODO: add additional tests here to ensure the compiler runs as expected
+  it('call nested builtin expressions', async () => {
+    const result = await run("max(2, abs(-6))", config);
+    expect(result).to.equal(6);
+  });
 });

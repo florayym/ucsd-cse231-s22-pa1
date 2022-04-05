@@ -24,6 +24,7 @@ if (typeof process !== "undefined") {
 export async function run(source: string, config: any): Promise<number> {
   const wabtInterface = await wabt();
   const parsed = parse(source);
+  // console.log(JSON.stringify(parsed, null, 2))
   var returnType = "";
   var returnExpr = "";
   const lastExpr = parsed[parsed.length - 1]
